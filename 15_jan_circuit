@@ -1,0 +1,466 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled1.ipynb",
+      "provenance": [],
+      "authorship_tag": "ABX9TyMOOJNXxkOgHm3mOP5ni41m",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/vaibhav016/Quantum_speech/blob/main/15_jan_circuit\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "cd .."
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "iepjmup3Mezg",
+        "outputId": "b4181e5c-7f75-4772-d8a3-60335fe01afc"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\u001b[0m\u001b[01;34mbin\u001b[0m/      \u001b[01;34mdev\u001b[0m/   \u001b[01;34mlib32\u001b[0m/  \u001b[01;34mopt\u001b[0m/         \u001b[01;34mrun\u001b[0m/   \u001b[01;34mtensorflow-1.15.2\u001b[0m/  \u001b[01;34mvar\u001b[0m/\n",
+            "\u001b[01;34mboot\u001b[0m/     \u001b[01;34metc\u001b[0m/   \u001b[01;34mlib64\u001b[0m/  \u001b[01;34mproc\u001b[0m/        \u001b[01;34msbin\u001b[0m/  \u001b[30;42mtmp\u001b[0m/\n",
+            "\u001b[01;34mcontent\u001b[0m/  \u001b[01;34mhome\u001b[0m/  \u001b[01;34mmedia\u001b[0m/  \u001b[01;34mpython-apt\u001b[0m/  \u001b[01;34msrv\u001b[0m/   \u001b[01;34mtools\u001b[0m/\n",
+            "\u001b[01;34mdatalab\u001b[0m/  \u001b[01;34mlib\u001b[0m/   \u001b[01;34mmnt\u001b[0m/    \u001b[01;34mroot\u001b[0m/        \u001b[01;34msys\u001b[0m/   \u001b[01;34musr\u001b[0m/\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 7,
+      "metadata": {
+        "id": "2nphVHhuG_nm"
+      },
+      "outputs": [],
+      "source": [
+        "mkdir dataset\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "cd dataset"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "utIYDVeVMqvf",
+        "outputId": "46b9eea0-24f2-49bf-8692-c057b1ba5a5e"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "/dataset\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!wget http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ia45LACgHaGC",
+        "outputId": "e81deeb6-6b7e-49a6-ec17-a2f203e20a06"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "--2022-01-15 05:25:37--  http://download.tensorflow.org/data/speech_commands_v0.01.tar.gz\n",
+            "Resolving download.tensorflow.org (download.tensorflow.org)... 142.251.33.208, 2607:f8b0:4004:837::2010\n",
+            "Connecting to download.tensorflow.org (download.tensorflow.org)|142.251.33.208|:80... connected.\n",
+            "HTTP request sent, awaiting response... 200 OK\n",
+            "Length: 1489096277 (1.4G) [application/gzip]\n",
+            "Saving to: ‘speech_commands_v0.01.tar.gz’\n",
+            "\n",
+            "speech_commands_v0. 100%[===================>]   1.39G   120MB/s    in 12s     \n",
+            "\n",
+            "2022-01-15 05:25:50 (115 MB/s) - ‘speech_commands_v0.01.tar.gz’ saved [1489096277/1489096277]\n",
+            "\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!tar -xf speech_commands_v0.01.tar.gz"
+      ],
+      "metadata": {
+        "id": "aPFuYRGnHl2u"
+      },
+      "execution_count": 10,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pip install pennylane"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "uw0MwAFCLP4J",
+        "outputId": "27dc579e-ad0a-408e-8352-8f4a7458a373"
+      },
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting pennylane\n",
+            "  Downloading PennyLane-0.20.0-py3-none-any.whl (756 kB)\n",
+            "\u001b[?25l\r\u001b[K     |▍                               | 10 kB 32.4 MB/s eta 0:00:01\r\u001b[K     |▉                               | 20 kB 38.9 MB/s eta 0:00:01\r\u001b[K     |█▎                              | 30 kB 42.2 MB/s eta 0:00:01\r\u001b[K     |█▊                              | 40 kB 45.5 MB/s eta 0:00:01\r\u001b[K     |██▏                             | 51 kB 32.8 MB/s eta 0:00:01\r\u001b[K     |██▋                             | 61 kB 35.6 MB/s eta 0:00:01\r\u001b[K     |███                             | 71 kB 23.7 MB/s eta 0:00:01\r\u001b[K     |███▌                            | 81 kB 25.5 MB/s eta 0:00:01\r\u001b[K     |████                            | 92 kB 27.5 MB/s eta 0:00:01\r\u001b[K     |████▎                           | 102 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████▊                           | 112 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████▏                          | 122 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████▋                          | 133 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████                          | 143 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████▌                         | 153 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████                         | 163 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████▍                        | 174 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████▉                        | 184 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████▎                       | 194 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████▋                       | 204 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████                       | 215 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████▌                      | 225 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████                      | 235 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████▍                     | 245 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████▉                     | 256 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████▎                    | 266 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████▊                    | 276 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████▏                   | 286 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████▋                   | 296 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████                   | 307 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████▍                  | 317 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████▉                  | 327 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████▎                 | 337 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████▊                 | 348 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████▏                | 358 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████▋                | 368 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████                | 378 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████▌               | 389 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████               | 399 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████▎              | 409 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████▊              | 419 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████▏             | 430 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████▋             | 440 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████             | 450 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████▌            | 460 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████████            | 471 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████████▍           | 481 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████████▉           | 491 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████████▏          | 501 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████████▋          | 512 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████████          | 522 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████████▌         | 532 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████████         | 542 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████████▍        | 552 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████████▉        | 563 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████████████▎       | 573 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████████████▊       | 583 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████████████▏      | 593 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████████████▌      | 604 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████████████      | 614 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████████████▍     | 624 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████████████▉     | 634 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████████████▎    | 645 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████████████▊    | 655 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████████████████▏   | 665 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████████████████▋   | 675 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████████████████   | 686 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████████████████▌  | 696 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |█████████████████████████████▉  | 706 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████████████████▎ | 716 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |██████████████████████████████▊ | 727 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████████████████▏| 737 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |███████████████████████████████▋| 747 kB 28.9 MB/s eta 0:00:01\r\u001b[K     |████████████████████████████████| 756 kB 28.9 MB/s \n",
+            "\u001b[?25hRequirement already satisfied: autograd in /usr/local/lib/python3.7/dist-packages (from pennylane) (1.3)\n",
+            "Requirement already satisfied: scipy in /usr/local/lib/python3.7/dist-packages (from pennylane) (1.4.1)\n",
+            "Requirement already satisfied: cachetools in /usr/local/lib/python3.7/dist-packages (from pennylane) (4.2.4)\n",
+            "Collecting pennylane-lightning>=0.18\n",
+            "  Downloading PennyLane_Lightning-0.20.2-cp37-cp37m-manylinux2014_x86_64.whl (305 kB)\n",
+            "\u001b[K     |████████████████████████████████| 305 kB 77.3 MB/s \n",
+            "\u001b[?25hCollecting autoray\n",
+            "  Downloading autoray-0.2.5-py3-none-any.whl (16 kB)\n",
+            "Requirement already satisfied: toml in /usr/local/lib/python3.7/dist-packages (from pennylane) (0.10.2)\n",
+            "Requirement already satisfied: networkx in /usr/local/lib/python3.7/dist-packages (from pennylane) (2.6.3)\n",
+            "Collecting semantic-version==2.6\n",
+            "  Downloading semantic_version-2.6.0-py3-none-any.whl (14 kB)\n",
+            "Requirement already satisfied: appdirs in /usr/local/lib/python3.7/dist-packages (from pennylane) (1.4.4)\n",
+            "Requirement already satisfied: numpy in /usr/local/lib/python3.7/dist-packages (from pennylane) (1.19.5)\n",
+            "Collecting ninja\n",
+            "  Downloading ninja-1.10.2.3-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl (108 kB)\n",
+            "\u001b[K     |████████████████████████████████| 108 kB 74.9 MB/s \n",
+            "\u001b[?25hRequirement already satisfied: future>=0.15.2 in /usr/local/lib/python3.7/dist-packages (from autograd->pennylane) (0.16.0)\n",
+            "Installing collected packages: ninja, semantic-version, pennylane-lightning, autoray, pennylane\n",
+            "Successfully installed autoray-0.2.5 ninja-1.10.2.3 pennylane-0.20.0 pennylane-lightning-0.20.2 semantic-version-2.6.0\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "cd .."
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9ppYgG2ONA_-",
+        "outputId": "8e1a074b-f340-4e0d-c578-f23192004c7d"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\u001b[0m\u001b[01;34mbin\u001b[0m/      \u001b[01;34mdataset\u001b[0m/  \u001b[01;34mlib\u001b[0m/    \u001b[01;34mmnt\u001b[0m/         \u001b[01;34mroot\u001b[0m/  \u001b[01;34msys\u001b[0m/                \u001b[01;34musr\u001b[0m/\n",
+            "\u001b[01;34mboot\u001b[0m/     \u001b[01;34mdev\u001b[0m/      \u001b[01;34mlib32\u001b[0m/  \u001b[01;34mopt\u001b[0m/         \u001b[01;34mrun\u001b[0m/   \u001b[01;34mtensorflow-1.15.2\u001b[0m/  \u001b[01;34mvar\u001b[0m/\n",
+            "\u001b[01;34mcontent\u001b[0m/  \u001b[01;34metc\u001b[0m/      \u001b[01;34mlib64\u001b[0m/  \u001b[01;34mproc\u001b[0m/        \u001b[01;34msbin\u001b[0m/  \u001b[30;42mtmp\u001b[0m/\n",
+            "\u001b[01;34mdatalab\u001b[0m/  \u001b[01;34mhome\u001b[0m/     \u001b[01;34mmedia\u001b[0m/  \u001b[01;34mpython-apt\u001b[0m/  \u001b[01;34msrv\u001b[0m/   \u001b[01;34mtools\u001b[0m/\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pennylane as qml\n",
+        "from pennylane import numpy as np\n",
+        "import pennylane as qml\n",
+        "import tensorflow as tf\n",
+        "import sklearn.datasets\n",
+        "import os\n",
+        "import librosa\n",
+        "import matplotlib.pyplot as plt\n",
+        "from scipy.io import wavfile\n",
+        "from tqdm import tqdm\n",
+        "import warnings\n",
+        "import tensorflow as tf\n",
+        "\n",
+        "\n",
+        "from sklearn.preprocessing import LabelEncoder\n",
+        "from tensorflow import keras\n",
+        "from tensorflow.keras.optimizers import RMSprop, SGD\n",
+        "\n",
+        "from sklearn.model_selection import train_test_split\n",
+        "wires = 8  \n",
+        "dev = qml.device('default.qubit', wires=wires)\n",
+        "train_audio_path = 'dataset/'\n",
+        "sr=16000\n"
+      ],
+      "metadata": {
+        "id": "DP1JHSBRKQQm"
+      },
+      "execution_count": 16,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Generating mel \n",
+        "def gen_mel(labels, train_audio_path, sr):\n",
+        "    all_wave = []\n",
+        "    all_label = []\n",
+        "    for label in tqdm(labels):\n",
+        "        waves = [f for f in os.listdir(train_audio_path + '/'+ label) if f.endswith('.wav')]\n",
+        "        for num, wav in enumerate(waves, 0):\n",
+        "            y, _ = librosa.load(train_audio_path + '/' + label + '/' + wav, sr = sr)\n",
+        "            if(len(y)== sr) :\n",
+        "                mel_feat = librosa.feature.melspectrogram(y, sr=sr, n_fft=1024, hop_length=1024, power=1.0, n_mels=16, fmin=40.0, fmax=sr/2)\n",
+        "                all_wave.append(np.reshape(mel_feat,-1))\n",
+        "                all_label.append(label)\n",
+        "\n",
+        "    return all_wave, all_label\n",
+        "\n",
+        "labels = [\n",
+        "    'left', 'go', 'yes', 'down', 'up', 'on', 'right', 'no', 'off', 'stop',\n",
+        "]\n",
+        "\n",
+        "train_audio_path = 'dataset/'\n",
+        "\n",
+        "all_wave, all_label = gen_mel(labels, train_audio_path, sr)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "h82NxJW8K3WP",
+        "outputId": "b3125e76-d4d2-40fd-e33f-4e5cead284e7"
+      },
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "100%|██████████| 10/10 [00:24<00:00,  2.50s/it]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# making training data \n",
+        "label_enconder = LabelEncoder()\n",
+        "y = label_enconder.fit_transform(all_label)\n",
+        "classes = list(label_enconder.classes_)\n",
+        "y = keras.utils.to_categorical(y, num_classes=len(labels))\n",
+        "\n",
+        "# input_mel = tf.convert_to_tensor(all_wave, dtype=tf.float32)\n",
+        "# print(input_mel.shape)\n",
+        "\n",
+        "# y_tf = tf.convert_to_tensor(y, dtype=tf.float32)\n",
+        "# print(y.shape)\n",
+        "\n",
+        "x_train, x_valid, y_train, y_valid = train_test_split(np.array(all_wave),np.array(y),test_size = 0.2,random_state=777,shuffle=True)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "KJsUkGcoLZVN",
+        "outputId": "f414d6f6-1ed3-43d1-a977-98b5a1e528c7"
+      },
+      "execution_count": 18,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "(21312, 256)\n",
+            "(21312, 10)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def conv_alternate_inner_circuit(weights, i, j): \n",
+        "#     print(\"inside alternate_circuit, weights shape\", weights, weights.shape)\n",
+        "    qml.CNOT(wires=[j, i])\n",
+        "    qml.RZ(weights[0], wires = i)\n",
+        "    qml.RY(weights[1], wires = j)\n",
+        "    qml.CNOT(wires=[i, j])\n",
+        "    qml.RY(weights[2], wires = j)\n",
+        "    qml.CNOT(wires=[j, i])\n",
+        "\n",
+        "def conv_circuit_join(weights):\n",
+        "#     print(\"inside conv_circuit, weights shape\", weights, weights.shape)\n",
+        "    for i in range(1,7,2):\n",
+        "        conv_alternate_inner_circuit(weights[i], i, i+1)\n",
+        "    for i in range(0,7,2):\n",
+        "        conv_alternate_inner_circuit(weights[i], i, i+1)\n",
+        "\n",
+        "def quantum_pooling():\n",
+        "    # both these cnot and S are non-parametric gates, so no weights.\n",
+        "    for i in range(0,7,2):\n",
+        "        qml.CNOT(wires=[i+1, i])\n",
+        "        qml.S(wires=i)"
+      ],
+      "metadata": {
+        "id": "7peCaISGMHMI"
+      },
+      "execution_count": 19,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "@qml.qnode(dev)\n",
+        "def qnode(inputs, weights_conv_0,weights_conv_1, weights_conv_2, weights_conv_3):\n",
+        "    qml.AmplitudeEmbedding(inputs, wires=range(8), pad_with=0.,normalize=True) # state preparation. \n",
+        "    conv_circuit_join(weights_conv_0)  \n",
+        "    quantum_pooling()\n",
+        "    conv_alternate_inner_circuit(weights_conv_1, 0, 2)\n",
+        "    conv_alternate_inner_circuit(weights_conv_2,4, 6)\n",
+        "    conv_alternate_inner_circuit(weights_conv_3,2, 6)\n",
+        "    \n",
+        "    #Last pooling \n",
+        "    qml.CNOT(wires=[2, 0])\n",
+        "    qml.S(wires=0)\n",
+        "    \n",
+        "    qml.CNOT(wires=[6, 4])\n",
+        "    qml.S(wires=4)\n",
+        "    \n",
+        "    # Final fully connected layer for binary classification\n",
+        "    qml.CNOT(wires=[0, 4])\n",
+        "    \n",
+        "    m = [qml.expval(qml.PauliZ(i)) for i in range(8)]\n",
+        "    return m"
+      ],
+      "metadata": {
+        "id": "A9QL_5h9MLRf"
+      },
+      "execution_count": 20,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "weight_shapes = {\"weights_conv_0\": (8,3),\"weights_conv_1\":[3],\"weights_conv_2\":[3]\n",
+        "                ,\"weights_conv_3\":[3]}\n",
+        "\n",
+        "qlayer = qml.qnn.KerasLayer(qnode, weight_shapes, output_dim=8)\n",
+        "clayer2 = keras.layers.Dense(10, activation=\"softmax\")\n",
+        "model = tf.keras.models.Sequential([qlayer, clayer2])\n"
+      ],
+      "metadata": {
+        "id": "NBR8xd7VMNaO"
+      },
+      "execution_count": 21,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "model.compile(\n",
+        "        optimizer=SGD(lr=0.01, momentum=0.9),\n",
+        "        loss=\"categorical_crossentropy\",\n",
+        "        metrics=[\"accuracy\"]\n",
+        "    )"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "22hYAYghMQIm",
+        "outputId": "a23863be-b6d5-4b27-be4b-316697062668"
+      },
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.7/dist-packages/keras/optimizer_v2/gradient_descent.py:102: UserWarning: The `lr` argument is deprecated, use `learning_rate` instead.\n",
+            "  super(SGD, self).__init__(name, **kwargs)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "history = model.fit(\n",
+        "    x_train,\n",
+        "    y_train,\n",
+        "    batch_size=50,\n",
+        "    epochs=1,\n",
+        "    verbose=1\n",
+        ")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Xn9mRPU3MSQe",
+        "outputId": "d5351e10-ee28-4db0-d169-b6e2a824cd27"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            " 16/341 [>.............................] - ETA: 1:12:11 - loss: 2.3192 - accuracy: 0.1388"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        ""
+      ],
+      "metadata": {
+        "id": "tQaG3WgfNp74"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
